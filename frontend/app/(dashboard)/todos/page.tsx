@@ -13,7 +13,9 @@ import { toast } from "sonner";
 import TodoCard from "@/components/todos/TodoCard";
 import TodoFilters from "@/components/todos/TodoFilters";
 import TodoForm from "@/components/todos/TodoForm";
+import TodoListSkeleton from "@/components/todos/TodoListSkeleton";
 import TodoStatCard from "@/components/todos/TodoStatCard";
+import TodoStatsSkeleton from "@/components/todos/TodoStatsSkeleton";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import Modal from "@/components/ui/Modal";
 import Pagination from "@/components/ui/Pagination";
@@ -116,7 +118,7 @@ export default function TodosPage() {
       if (axios.isAxiosError(error)) {
         toast.error(
           error.response?.data?.message ??
-            "Unable to create the todo."
+          "Unable to create the todo."
         );
 
         return;
@@ -157,7 +159,7 @@ export default function TodosPage() {
       if (axios.isAxiosError(error)) {
         toast.error(
           error.response?.data?.message ??
-            "Unable to delete the todo."
+          "Unable to delete the todo."
         );
 
         return;
@@ -195,7 +197,7 @@ export default function TodosPage() {
       if (axios.isAxiosError(error)) {
         toast.error(
           error.response?.data?.message ??
-            "Unable to update the todo."
+          "Unable to update the todo."
         );
 
         return;
@@ -234,7 +236,7 @@ export default function TodosPage() {
           if (axios.isAxiosError(error)) {
             toast.error(
               error.response?.data?.message ??
-                "Unable to update the todo status."
+              "Unable to update the todo status."
             );
 
             return;
@@ -330,9 +332,14 @@ export default function TodosPage() {
   const meta =
     todoListQuery.data?.meta;
 
-  const isLoading =
-    todoListQuery.isPending ||
+  const isTodoListLoading =
+    todoListQuery.isPending;
+
+  const isStatsLoading =
     todoStatsQuery.isPending;
+
+  const isInitialLoading =
+    isTodoListLoading || isStatsLoading;
 
   const isRefreshing =
     todoListQuery.isFetching ||
@@ -413,37 +420,41 @@ export default function TodosPage() {
           </div>
         )}
 
-        <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          <TodoStatCard
-            label="Total"
-            value={stats.total}
-            description="All your todos"
-          />
+        {isStatsLoading ? (
+          <TodoStatsSkeleton />
+        ) : (
+          <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            <TodoStatCard
+              label="Total"
+              value={stats.total}
+              description="All your todos"
+            />
 
-          <TodoStatCard
-            label="To do"
-            value={stats.todo}
-            description="Not started"
-          />
+            <TodoStatCard
+              label="To do"
+              value={stats.todo}
+              description="Not started"
+            />
 
-          <TodoStatCard
-            label="Pending"
-            value={stats.pending}
-            description="Currently in progress"
-          />
+            <TodoStatCard
+              label="Pending"
+              value={stats.pending}
+              description="Currently in progress"
+            />
 
-          <TodoStatCard
-            label="Completed"
-            value={stats.completed}
-            description="Finished tasks"
-          />
+            <TodoStatCard
+              label="Completed"
+              value={stats.completed}
+              description="Finished tasks"
+            />
 
-          <TodoStatCard
-            label="Overdue"
-            value={stats.overdue}
-            description="Past their due date"
-          />
-        </section>
+            <TodoStatCard
+              label="Overdue"
+              value={stats.overdue}
+              description="Past their due date"
+            />
+          </section>
+        )}
 
         <section className="mt-10">
           <TodoFilters
@@ -477,21 +488,19 @@ export default function TodosPage() {
               </p>
             </div>
 
-            {isRefreshing && !isLoading && (
-              <p className="text-sm text-slate-500">
+            {isRefreshing && !isInitialLoading && (
+              <p
+                role="status"
+                aria-live="polite"
+                className="text-sm text-slate-500"
+              >
                 Refreshing...
               </p>
             )}
           </div>
 
-          {isLoading ? (
-            <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center shadow-sm">
-              <div className="mx-auto h-9 w-9 animate-spin rounded-full border-4 border-slate-200 border-t-slate-900" />
-
-              <p className="mt-4 text-sm font-medium text-slate-500">
-                Loading your todos...
-              </p>
-            </div>
+          {isTodoListLoading ? (
+            <TodoListSkeleton count={6} />
           ) : todos.length === 0 &&
             !errorMessage ? (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-16 text-center">
@@ -529,47 +538,43 @@ export default function TodosPage() {
             </div>
           ) : (
             <>
-              <div className="grid gap-4 lg:grid-cols-2">
-                {todos.map((todo) => (
-                  <TodoCard
-                    key={todo.id}
-                    todo={todo}
-                    isUpdating={
-                      updateTodoMutation.isPending &&
-                      updateTodoMutation.variables
-                        ?.todoId === todo.id
-                    }
-                    onEdit={setEditingTodo}
-                    onDelete={setDeletingTodo}
-                    onStatusChange={
-                      handleStatusChange
-                    }
-                  />
-                ))}
-              </div>
+              <div
+                className={`transition-opacity duration-200 ${todoListQuery.isFetching
+                  ? "opacity-60"
+                  : "opacity-100"
+                  }`}
+              >
+                <div className="grid gap-4 lg:grid-cols-2">
+                  {todos.map((todo) => (
+                    <TodoCard
+                      key={todo.id}
+                      todo={todo}
+                      isUpdating={
+                        updateTodoMutation.isPending &&
+                        updateTodoMutation.variables?.todoId ===
+                        todo.id
+                      }
+                      onEdit={setEditingTodo}
+                      onDelete={setDeletingTodo}
+                      onStatusChange={handleStatusChange}
+                    />
+                  ))}
+                </div>
 
-              <Pagination
-                currentPage={
-                  meta?.current_page ?? 1
-                }
-                lastPage={
-                  meta?.last_page ?? 1
-                }
-                isLoading={
-                  todoListQuery.isFetching
-                }
-                onPageChange={handlePageChange}
-              />
+                <Pagination
+                  currentPage={meta?.current_page ?? 1}
+                  lastPage={meta?.last_page ?? 1}
+                  isLoading={todoListQuery.isFetching}
+                  onPageChange={handlePageChange}
+                />
+              </div>
 
               {meta &&
                 meta.from !== null &&
                 meta.to !== null && (
                   <p className="mt-4 text-center text-sm text-slate-500">
-                    Showing {meta.from} to{" "}
-                    {meta.to} of {meta.total}{" "}
-                    {meta.total === 1
-                      ? "todo"
-                      : "todos"}
+                    Showing {meta.from} to {meta.to} of {meta.total}{" "}
+                    {meta.total === 1 ? "todo" : "todos"}
                   </p>
                 )}
             </>
