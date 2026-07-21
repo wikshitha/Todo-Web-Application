@@ -3,22 +3,28 @@
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import {
+ type SyntheticEvent,
+  useState,
+} from "react";
+import { toast } from "sonner";
 
-import { login } from "@/services/auth.service";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
 
   const [error, setError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] =
+    useState(false);
 
   const handleSubmit = async (
-    event: FormEvent<HTMLFormElement>
+    event: SyntheticEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
 
@@ -32,8 +38,9 @@ export default function LoginPage() {
         remember,
       });
 
-      router.push("/todos");
-      router.refresh();
+      toast.success("Logged in successfully.");
+
+      router.replace("/todos");
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         setError(
@@ -83,11 +90,13 @@ export default function LoginPage() {
               id="email"
               type="email"
               value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              onChange={(event) =>
+                setEmail(event.target.value)
+              }
               required
               autoComplete="email"
-              className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-200"
               placeholder="you@example.com"
+              className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-200"
             />
           </div>
 
@@ -108,8 +117,8 @@ export default function LoginPage() {
               }
               required
               autoComplete="current-password"
-              className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-200"
               placeholder="Enter your password"
+              className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-200"
             />
           </div>
 
@@ -131,7 +140,9 @@ export default function LoginPage() {
             disabled={isSubmitting}
             className="w-full rounded-lg bg-slate-900 px-4 py-3 font-semibold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {isSubmitting ? "Logging in..." : "Log in"}
+            {isSubmitting
+              ? "Logging in..."
+              : "Log in"}
           </button>
         </form>
 

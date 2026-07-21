@@ -3,9 +3,13 @@
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import {
+  type SyntheticEvent,
+  useState,
+} from "react";
+import { toast } from "sonner";
 
-import { register } from "@/services/auth.service";
+import { useAuth } from "@/context/AuthContext";
 
 interface ValidationErrors {
   [field: string]: string[];
@@ -13,20 +17,27 @@ interface ValidationErrors {
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { register } = useAuth();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [passwordConfirmation, setPasswordConfirmation] =
-    useState("");
+  const [
+    passwordConfirmation,
+    setPasswordConfirmation,
+  ] = useState("");
 
   const [error, setError] = useState("");
-  const [validationErrors, setValidationErrors] =
-    useState<ValidationErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [
+    validationErrors,
+    setValidationErrors,
+  ] = useState<ValidationErrors>({});
+
+  const [isSubmitting, setIsSubmitting] =
+    useState(false);
 
   const handleSubmit = async (
-    event: FormEvent<HTMLFormElement>
+    event: SyntheticEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
 
@@ -39,11 +50,15 @@ export default function RegisterPage() {
         name,
         email,
         password,
-        password_confirmation: passwordConfirmation,
+        password_confirmation:
+          passwordConfirmation,
       });
 
-      router.push("/todos");
-      router.refresh();
+      toast.success(
+        "Your account was created successfully."
+      );
+
+      router.replace("/todos");
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         if (error.response?.status === 422) {
@@ -99,11 +114,13 @@ export default function RegisterPage() {
               id="name"
               type="text"
               value={name}
-              onChange={(event) => setName(event.target.value)}
+              onChange={(event) =>
+                setName(event.target.value)
+              }
               required
               autoComplete="name"
-              className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-200"
               placeholder="Your name"
+              className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-200"
             />
 
             {validationErrors.name?.[0] && (
@@ -125,11 +142,13 @@ export default function RegisterPage() {
               id="email"
               type="email"
               value={email}
-              onChange={(event) => setEmail(event.target.value)}
+              onChange={(event) =>
+                setEmail(event.target.value)
+              }
               required
               autoComplete="email"
-              className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-200"
               placeholder="you@example.com"
+              className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-200"
             />
 
             {validationErrors.email?.[0] && (
@@ -156,8 +175,8 @@ export default function RegisterPage() {
               }
               required
               autoComplete="new-password"
-              className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-200"
               placeholder="Create a password"
+              className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-200"
             />
 
             {validationErrors.password?.[0] && (
@@ -180,12 +199,14 @@ export default function RegisterPage() {
               type="password"
               value={passwordConfirmation}
               onChange={(event) =>
-                setPasswordConfirmation(event.target.value)
+                setPasswordConfirmation(
+                  event.target.value
+                )
               }
               required
               autoComplete="new-password"
-              className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-200"
               placeholder="Confirm your password"
+              className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-200"
             />
           </div>
 
