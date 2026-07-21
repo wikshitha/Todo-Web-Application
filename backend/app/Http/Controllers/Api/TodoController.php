@@ -143,10 +143,7 @@ class TodoController extends Controller
     /**
      * Display one todo.
      */
-    public function show(
-        Request $request,
-        Todo $todo
-    ): TodoResource {
+    public function show(Todo $todo): TodoResource {
         $this->authorize('view', $todo);
 
         return new TodoResource($todo);
@@ -169,10 +166,7 @@ class TodoController extends Controller
     /**
      * Delete one todo.
      */
-    public function destroy(
-        Request $request,
-        Todo $todo
-    ): JsonResponse {
+    public function destroy(Todo $todo): JsonResponse {
         $this->authorize('delete', $todo);
 
         $todo->delete();

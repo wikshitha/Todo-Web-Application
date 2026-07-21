@@ -4,7 +4,7 @@ import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
- type SyntheticEvent,
+  type SyntheticEvent,
   useState,
 } from "react";
 import { toast } from "sonner";
@@ -17,7 +17,6 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(false);
 
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] =
@@ -35,7 +34,6 @@ export default function LoginPage() {
       await login({
         email,
         password,
-        remember,
       });
 
       toast.success("Logged in successfully.");
@@ -121,19 +119,6 @@ export default function LoginPage() {
               className="w-full rounded-lg border border-slate-300 px-4 py-3 outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-200"
             />
           </div>
-
-          <label className="flex items-center gap-2 text-sm text-slate-600">
-            <input
-              type="checkbox"
-              checked={remember}
-              onChange={(event) =>
-                setRemember(event.target.checked)
-              }
-              className="h-4 w-4 rounded border-slate-300"
-            />
-
-            Remember me
-          </label>
 
           <button
             type="submit"

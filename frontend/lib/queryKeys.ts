@@ -12,12 +12,4 @@ export const todoQueryKeys = {
   stats: () =>
     [...todoQueryKeys.all, "stats"] as const,
 
-  details: () =>
-    [...todoQueryKeys.all, "detail"] as const,
-
-  detail: (todoId: number) =>
-    [
-      ...todoQueryKeys.details(),
-      todoId,
-    ] as const,
 };

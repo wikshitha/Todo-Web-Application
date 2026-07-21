@@ -31,16 +31,6 @@ export const getTodoStats = async (): Promise<TodoStats> => {
   return response.data.data;
 };
 
-export const getTodo = async (
-  todoId: number
-): Promise<Todo> => {
-  const response = await api.get<TodoResponse>(
-    `/api/todos/${todoId}`
-  );
-
-  return response.data.data;
-};
-
 export const createTodo = async (
   data: TodoFormData
 ): Promise<Todo> => {

@@ -10,10 +10,8 @@ import {
 import { toast } from "sonner";
 
 import { useAuth } from "@/context/AuthContext";
+import type { ValidationErrors } from "@/types/api";
 
-interface ValidationErrors {
-  [field: string]: string[];
-}
 
 export default function RegisterPage() {
   const router = useRouter();
