@@ -1,10 +1,12 @@
+import type { TodoListParams } from "@/types/todo";
+
 export const todoQueryKeys = {
   all: ["todos"] as const,
 
   lists: () =>
     [...todoQueryKeys.all, "list"] as const,
 
-  list: (params: object) =>
+  list: (params: TodoListParams) =>
     [...todoQueryKeys.lists(), params] as const,
 
   stats: () =>
@@ -14,5 +16,8 @@ export const todoQueryKeys = {
     [...todoQueryKeys.all, "detail"] as const,
 
   detail: (todoId: number) =>
-    [...todoQueryKeys.details(), todoId] as const,
+    [
+      ...todoQueryKeys.details(),
+      todoId,
+    ] as const,
 };

@@ -1,4 +1,16 @@
-export type TodoStatus = "TODO" | "PENDING" | "COMPLETED";
+export type TodoStatus =
+  | "TODO"
+  | "PENDING"
+  | "COMPLETED";
+
+export type TodoSortBy =
+  | "created_at"
+  | "updated_at"
+  | "due_date"
+  | "title"
+  | "status";
+
+export type SortDirection = "asc" | "desc";
 
 export interface Todo {
   id: number;
@@ -20,13 +32,8 @@ export interface TodoFormData {
 export interface TodoListParams {
   search?: string;
   status?: TodoStatus | "";
-  sort_by?:
-    | "created_at"
-    | "updated_at"
-    | "due_date"
-    | "title"
-    | "status";
-  sort_direction?: "asc" | "desc";
+  sort_by?: TodoSortBy;
+  sort_direction?: SortDirection;
   per_page?: number;
   page?: number;
 }
