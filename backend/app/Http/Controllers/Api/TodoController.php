@@ -89,6 +89,38 @@ class TodoController extends Controller
         return TodoResource::collection($todos);
     }
 
+        /**
+    * Display statistics for the authenticated user's todos.
+    */
+    public function stats(Request $request): JsonResponse
+    {
+        $baseQuery = $request->user()->todos();
+
+        return response()->json([
+            'data' => [
+                'total' => (clone $baseQuery)->count(),
+
+                'todo' => (clone $baseQuery)
+                    ->where('status', TodoStatus::TODO)
+                    ->count(),
+
+                'pending' => (clone $baseQuery)
+                    ->where('status', TodoStatus::PENDING)
+                    ->count(),
+
+                'completed' => (clone $baseQuery)
+                    ->where('status', TodoStatus::COMPLETED)
+                    ->count(),
+
+                'overdue' => (clone $baseQuery)
+                    ->whereNotNull('due_date')
+                    ->where('due_date', '<', now())
+                    ->where('status', '!=', TodoStatus::COMPLETED)
+                    ->count(),
+            ],
+        ]);
+    }
+
     /**
      * Create a new todo.
      */
