@@ -1,26 +1,28 @@
 "use client";
 
-import { ReactNode } from "react";
 import { Toaster } from "sonner";
 
 import { AuthProvider } from "@/context/AuthContext";
+import QueryProvider from "@/components/providers/QueryProvider";
 
 interface AppProvidersProps {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
 export default function AppProviders({
   children,
 }: AppProvidersProps) {
   return (
-    <AuthProvider>
-      {children}
+    <QueryProvider>
+      <AuthProvider>
+        {children}
 
-      <Toaster
-        position="top-right"
-        richColors
-        closeButton
-      />
-    </AuthProvider>
+        <Toaster
+          position="top-right"
+          richColors
+          closeButton
+        />
+      </AuthProvider>
+    </QueryProvider>
   );
 }

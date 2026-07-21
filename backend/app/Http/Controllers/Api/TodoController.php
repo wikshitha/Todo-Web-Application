@@ -89,9 +89,9 @@ class TodoController extends Controller
         return TodoResource::collection($todos);
     }
 
-        /**
-    * Display statistics for the authenticated user's todos.
-    */
+    /**
+     * Display statistics for the authenticated user's todos.
+     */
     public function stats(Request $request): JsonResponse
     {
         $baseQuery = $request->user()->todos();
